@@ -1,32 +1,32 @@
 package task3;
 
-import java.util.Random;
-
 public class Main {
     public static void main(String[] args) {
         NumberGuesser guesser = new NumberGuesser();
-        int maxAttempts = 1000;
+
+        int min = 0;
+        int max = 1000;
+        int guess;
+        int attempts = 1;
 
         while (true) {
-            int guess = new Random().nextInt(1001);
+            guess = min + (max - min) / 2;
 
             try {
-                guesser.guess(guess);
-                break; // Если угадано верно, завершаем цикл.
-            } catch (LessException e) {
-                System.out.println(e.getMessage());
-            } catch (GreaterException e) {
-                System.out.println(e.getMessage());
-            }
-
-            if (guesser.getAttempts() >= maxAttempts) {
-                System.out.println("Превышено максимальное количество попыток.");
+                guesser.checkGuess(guess);
+                System.out.println("Вы угадали! Загаданное число: " + guess);
+                System.out.println("Количество попыток: " + attempts);
                 break;
+            } catch (LessException e) {
+                System.out.println("Попытка #" + attempts + ": " + e.getMessage());
+                min = guess + 1;
+            } catch (GreaterException e) {
+                System.out.println("Попытка #" + attempts + ": " + e.getMessage());
+                max = guess - 1;
             }
-        }
 
-        System.out.println("Загаданное число: " + guesser.getTargetNumber());
-        System.out.println("Количество попыток: " + guesser.getAttempts());
+            attempts++;
+        }
     }
 }
 

@@ -2,32 +2,19 @@ package task3;
 
 import java.util.Random;
 
-class NumberGuesser {
+public class NumberGuesser {
     private int targetNumber;
-    private int attempts;
 
     public NumberGuesser() {
-        Random rand = new Random();
-        targetNumber = rand.nextInt(1001); // Загадываем случайное число от 0 до 1000.
-        attempts = 0;
+        targetNumber = new Random().nextInt(1001);
     }
 
-    public void guess(int number) throws LessException, GreaterException {
-        attempts++;
-
+    public void checkGuess(int number) throws LessException, GreaterException {
         if (number < targetNumber) {
-            throw new LessException("Меньше загаданного числа.");
+            throw new LessException();
         } else if (number > targetNumber) {
-            throw new GreaterException("Больше загаданного числа.");
+            throw new GreaterException();
         }
-    }
-
-    public int getAttempts() {
-        return attempts;
-    }
-
-    public int getTargetNumber() {
-        return targetNumber;
     }
 }
 

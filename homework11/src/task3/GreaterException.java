@@ -1,6 +1,10 @@
 package task3;
 
-class GreaterException extends Exception {
+public class GreaterException extends Exception {
+    public GreaterException() {
+        super("Загаданное число меньше.");
+    }
+
     public GreaterException(String message) {
         super(message);
     }
