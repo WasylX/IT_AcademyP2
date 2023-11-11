@@ -2,20 +2,37 @@ package task1;
 
 public class Main {
     public static void main(String[] args) {
-        // Инициализируем сервисы и сплиттер
-        MessageService emailService = new EmailService();
-        MessageService smsService = new SmsService();
+        EmailService emailService = new EmailService();
+        SmsService smsService = new SmsService();
         Splitter splitter = new Splitter(emailService, smsService);
 
-        // Инициализируем подсистемы
+        emailService.runService();
+        smsService.runService();
+        splitter.runSplitter();
+
         Subsystem subsystemA = new Subsystem("SubsystemA", splitter);
         Subsystem subsystemB = new Subsystem("SubsystemB", splitter);
         Subsystem subsystemC = new Subsystem("SubsystemC", splitter);
+        
+        subsystemA.start();
+        subsystemB.start();
+        subsystemC.start();
 
-        // Генерируем и отправляем сообщения
-        subsystemA.generateAndSendMessage("Alert from A!");
-        subsystemB.generateAndSendMessage("Notification from B!");
-        subsystemC.generateAndSendMessage("Warning from C!");
+        try {
+            subsystemA.join();
+            subsystemB.join();
+            subsystemC.join();
+
+            splitter.stopSplitter();
+            emailService.stopService();
+            smsService.stopService();
+
+            System.out.println("All subsystems have completed. Services and splitter are stopped.");
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Main thread interrupted.");
+        }
     }
 }
 

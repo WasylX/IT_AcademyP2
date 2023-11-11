@@ -1,6 +1,8 @@
 package task1;
 
 interface MessageService {
-    void sendMessage(Message message);
+    void sendMessage(String message);
+    void runService();
+    void stopService();
 }
 

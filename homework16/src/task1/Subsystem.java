@@ -1,6 +1,6 @@
 package task1;
 
-class Subsystem {
+class Subsystem extends Thread {
     private final String name;
     private final Splitter splitter;
 
@@ -9,10 +9,16 @@ class Subsystem {
         this.splitter = splitter;
     }
 
-    public void generateAndSendMessage(String content) {
-        Message message = new Message(content);
-        System.out.println(name + " generated a message.");
-        splitter.splitAndSend(message);
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            splitter.splitAndSend(name + " message " + i);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
     }
 }
 

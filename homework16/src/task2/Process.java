@@ -2,7 +2,7 @@ package task2;
 
 class Process extends Thread {
     private final CriticalSection criticalSection;
-    private final int iterations; // Количество итераций для процесса
+    private final int iterations;
 
     public Process(CriticalSection criticalSection, String name, int iterations) {
         super(name);
