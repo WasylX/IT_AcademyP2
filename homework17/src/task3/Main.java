@@ -4,23 +4,10 @@ import java.util.Locale;
 
 public class Main {
     public static void main(String[] args) {
-        // Продукты с именами и категориями на двух языках
-        Product pen = new Product(
-                "Pen",
-                "Ручка",
-                "Stationery",
-                "Канцелярия",
-                1.99
-        );
-        Product notebook = new Product(
-                "Notebook",
-                "Тетрадь",
-                "Stationery",
-                "Канцелярия",
-                4.99
-        );
+        Product pen = new Product("pen", 1.99);
+        Product notebook = new Product("notebook", 4.99);
 
-        double exchangeRate = 100.0; // 1 USD = 100 RUB
+        double exchangeRate = 100.0;
 
         Basket basketRu = new Basket(
                 new Product[]{pen, notebook},

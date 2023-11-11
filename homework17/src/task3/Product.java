@@ -2,28 +2,25 @@ package task3;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
-class Product {
-    private String nameEn;
-    private String nameRu;
-    private String categoryEn;
-    private String categoryRu;
+public class Product {
+    private String key;
     private double price;
 
-    public Product(String nameEn, String nameRu, String categoryEn, String categoryRu, double price) {
-        this.nameEn = nameEn;
-        this.nameRu = nameRu;
-        this.categoryEn = categoryEn;
-        this.categoryRu = categoryRu;
+    public Product(String key, double price) {
+        this.key = key;
         this.price = price;
     }
 
     public String getName(Locale locale) {
-        return locale.getLanguage().equals("ru") ? nameRu : nameEn;
+        ResourceBundle labels = ResourceBundle.getBundle("labels", locale);
+        return labels.getString(key + ".name");
     }
 
     public String getCategory(Locale locale) {
-        return locale.getLanguage().equals("ru") ? categoryRu : categoryEn;
+        ResourceBundle labels = ResourceBundle.getBundle("labels", locale);
+        return labels.getString(key + ".category");
     }
 
     public double getPrice() {
@@ -31,8 +28,9 @@ class Product {
     }
 
     public String getLocalizedPrice(Locale locale, double exchangeRate) {
+        double localPrice = locale.getLanguage().equals(
+                new Locale("ru").getLanguage()) ? price * exchangeRate : price;
         NumberFormat formatter = NumberFormat.getCurrencyInstance(locale);
-        double localPrice = locale.getLanguage().equals("ru") ? price * exchangeRate : price;
         return formatter.format(localPrice);
     }
 }

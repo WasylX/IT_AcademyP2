@@ -4,8 +4,9 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
-class Basket {
+public class Basket {
     private Product[] products;
     private Locale locale;
     private double exchangeRate;
@@ -16,21 +17,26 @@ class Basket {
         this.exchangeRate = exchangeRate;
     }
 
+    private String getLocalizedString(String key) {
+        ResourceBundle labels = ResourceBundle.getBundle("labels", locale);
+        return labels.getString(key);
+    }
+
     public void printReceipt() {
         DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG, locale);
         System.out.println(dateFormatter.format(Calendar.getInstance().getTime()));
 
-        String productHeader = locale.getLanguage().equals("ru") ? "Продукты" : "Product";
-        String categoryHeader = locale.getLanguage().equals("ru") ? "Категория" : "Category";
-        String priceHeader = locale.getLanguage().equals("ru") ? "Цена" : "Price";
+        String productHeader = getLocalizedString("product");
+        String categoryHeader = getLocalizedString("category");
+        String priceHeader = getLocalizedString("price");
 
         System.out.println(String.format("%-10s %-20s %-10s", productHeader, categoryHeader, priceHeader));
-
         System.out.println("----------------------------------------------------------");
 
         double total = 0;
         for (Product product : products) {
-            total += product.getPrice();
+            double productPrice = product.getPrice();
+            total += productPrice;
             System.out.println(
                     String.format("%-10s %-20s %-10s",
                             product.getName(locale),
@@ -40,13 +46,16 @@ class Basket {
         }
 
         System.out.println("----------------------------------------------------------");
-
+        double totalLocalized = locale.getLanguage().equals(
+                new Locale("ru").getLanguage()) ? total * exchangeRate : total;
         System.out.println(
-                        String.format("%-32s %-10s",
-                        (locale.getLanguage().equals("ru") ? "Итого:" : "Total:"),
-                        NumberFormat.getCurrencyInstance(locale).format(locale.getLanguage().equals("ru")
-                                ? total * exchangeRate : total
-                        )));
+                String.format("%-32s %-10s", getLocalizedString("total"), formatCurrency(totalLocalized))
+        );
+    }
+
+    private String formatCurrency(double amount) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(locale);
+        return formatter.format(amount);
     }
 }
 
