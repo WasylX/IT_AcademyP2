@@ -3,10 +3,13 @@ package task1;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 class Splitter {
     private final MessageService emailService;
     private final MessageService smsService;
-    private final List<String> queue = new LinkedList<>();
+    private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
 
     public Splitter(MessageService emailService, MessageService smsService) {
@@ -14,29 +17,22 @@ class Splitter {
         this.smsService = smsService;
     }
 
-    public synchronized void splitAndSend(String message) {
-        queue.add(message);
-        notifyAll();
-    }
-
-    private synchronized String getNextMessage() throws InterruptedException {
-        while (queue.isEmpty() && running) {
-            wait();
+    public void splitAndSend(String message) {
+        try {
+            queue.put(message);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Error adding message to queue: " + e.getMessage());
         }
-        return queue.isEmpty() ? null : queue.remove(0);
     }
 
     public void runSplitter() {
         new Thread(() -> {
             try {
                 while (running) {
-                    String message = getNextMessage();
-                    if (message != null) {
-                        emailService.sendMessage(message + " via Email");
-                        smsService.sendMessage(message + " via SMS");
-                    } else {
-                        break;
-                    }
+                    String message = queue.take();
+                    emailService.sendMessage(message + " via Email");
+                    smsService.sendMessage(message + " via SMS");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -45,9 +41,8 @@ class Splitter {
         }).start();
     }
 
-    public synchronized void stopSplitter() {
+    public void stopSplitter() {
         running = false;
-        notifyAll();
     }
 }
 
